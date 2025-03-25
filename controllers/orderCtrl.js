@@ -162,6 +162,51 @@ export const updateOrderCtrl=asyncHandler(async(req,res)=>{
     })
 });
 
-export const deleteOrderCtrl= asyncHandler(async(req,res)=>{
-    
+export const getOrderStatsCtrl = asyncHandler(async(req,res)=>{
+  //get order stats
+  const orders =await Order.aggregate([
+    {
+        "$group":{
+            _id: null,
+            totalSales:{
+                $sum: "$totalPrice",
+            },
+            minimumSale:{
+                $min: "$totalPrice",
+            },
+            maximumSale:{
+                $max: "$totalPrice",
+            },
+            avgSale:{
+                $avg: "$totalPrice",
+            }
+        },
+    },
+  ]);
+const date= new Date();
+const today =new Date(date.getFullYear(),date.getMonth(),date.getDate());
+const saleToday = await Order.aggregate([
+    {
+        $match:{
+          createdAt:{
+            $gte: today,
+          } , 
+        },
+    },
+    {
+        $group:{
+            _id: null,
+            totalSales: {
+                $sum: "$totalPrice",
+            },
+        },
+    },
+]);
+
+  res.status(200).json({
+    success: true,
+    message: "Sum of orders",
+    orders,saleToday,
 })
+})
+

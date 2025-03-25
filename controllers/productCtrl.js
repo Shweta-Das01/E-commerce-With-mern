@@ -5,67 +5,68 @@ import Brand from "../model/Brand.js";
 import Color from "../model/Color.js";
 import { populate } from "dotenv";
 export const createProductCtrl = asyncHandler(async(req, res)=>{
-console.log(req.file);
 
-
-   //  const{name, description, category, sizes, colors, user, price, totalQty, brand} =req.body;
-//  //productexists
-//  const productexists =await Product.findOne({name});
-//  if(productexists){
-//     throw new Error("product already Exists");
-//  }
-//  //find the brand
-//  const brandFound =await Brand.findOne({
-//    name: brand?.toLowerCase(),
-//  });
-//  if(!brandFound){
-//    throw new Error(
-//       "Brand not found,please create brand first or check brand name"
-//    );
-//  }
-//  const colorFound =await Color.findOne({
-//    name: colors,
-//  });
-//  if(!colorFound){
-//    throw new Error(
-//       "color not found,please create color first or check brand name"
-//    );
-//  }
-//  //find the category
-//  const categoryFound =await Category.findOne({
-//    name: category,
-//  });
-//  if(!categoryFound){
-//    throw new Error(
-//       "Category not found,please create ccategory first or check category name"
-//    );
-//  }
-//  const product =await Product.create({
-//     name, 
-//     description, 
-//     category, 
-//     sizes, 
-//     colors, 
-//     user: req.userAuthId, 
-//     price, 
-//     totalQty,
-//     brand,
-//  });
-//  //push the product into category
-//  categoryFound.products.push(product._id);
-//  //receive
-//  await categoryFound.save();
-//  brandFound.products.push(product._id);
-//  //receive
-//  await brandFound.save();
-//  colorFound.products.push(product._id);
-//  //receive
-//  await colorFound.save();
-//  res.json({
-//     status:"success",
-//     message: "Product created successfully",
-//     product,
-//  });
+ const convertedImages=req.files.map(file=> file.path);
+ 
+const{name, description, category, sizes, colors, user, price, totalQty, brand} =req.body;
+ //productexists
+ const productexists =await Product.findOne({name});
+ if(productexists){
+    throw new Error("product already Exists");
+ }
+ //find the brand
+ const brandFound =await Brand.findOne({
+   name: brand?.toLowerCase(),
+ });
+ if(!brandFound){
+   throw new Error(
+      "Brand not found,please create brand first or check brand name"
+   );
+ }
+ const colorFound =await Color.findOne({
+   name: colors,
+ });
+ if(!colorFound){
+   throw new Error(
+      "color not found,please create color first or check brand name"
+   );
+ }
+ //find the category
+ const categoryFound =await Category.findOne({
+   name: category,
+ });
+ if(!categoryFound){
+   throw new Error(
+      "Category not found,please create category first or check category name"
+   );
+ }
+ const product =await Product.create({
+    name, 
+    description, 
+    category, 
+    sizes, 
+    colors, 
+    user: req.userAuthId, 
+    price, 
+    totalQty,
+    brand,
+    images: convertedImages,
+ });
+ //push the product into category
+ categoryFound.products.push(product._id);
+ //receive
+ await categoryFound.save();
+ brandFound.products.push(product._id);
+ //receive
+ await brandFound.save();
+ colorFound.products.push(product._id);
+ //receive
+ await colorFound.save();
+ res.json({
+    status:"success",
+    message: "Product created successfully",
+    product,
+ });
 });
 
 export const getProductCtrl=asyncHandler(async(req,res)=>{
